@@ -1,0 +1,76 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+// 1. 必须添加 @Autonomous 注解，让 FTC 识别为自主模式（手机上显示）
+@Autonomous(name = "Simple_Auto_Forward")
+// 2. 必须继承 LinearOpMode，才能使用 hardwareMap、waitForStart() 等核心功能
+public class Auto extends LinearOpMode {
+    // 3. 成员变量：定义四个驱动电机（仅声明，不初始化）
+    private DcMotor motorTestFR; // 前右电机
+    private DcMotor motorTestFL; // 前左电机
+    private DcMotor motorTestBL; // 后左电机
+    private DcMotor motorTestBR; // 后右电机
+
+    // 4. 核心方法：自主模式的主逻辑（必须重写 runOpMode()）
+    @Override
+    public void runOpMode() {
+        // 5. 硬件映射：初始化电机（必须在 runOpMode() 内，因为 hardwareMap 是 LinearOpMode 的成员）
+        motorTestFR = hardwareMap.get(DcMotor.class, "rightFront");
+        motorTestFL = hardwareMap.get(DcMotor.class, "leftFront");
+        motorTestBR = hardwareMap.get(DcMotor.class, "rightRear");
+        motorTestBL = hardwareMap.get(DcMotor.class, "leftRear");
+
+        // 6. 配置电机参数（方向、零功率行为，避免“轮子打架”）
+        motorTestFL.setDirection(DcMotor.Direction.FORWARD);
+        motorTestFR.setDirection(DcMotor.Direction.REVERSE); // 前右反转，适配前进方向
+        motorTestBL.setDirection(DcMotor.Direction.FORWARD);
+        motorTestBR.setDirection(DcMotor.Direction.REVERSE); // 后右反转，适配前进方向
+        motorTestFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorTestFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorTestBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorTestBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        // 初始化遥测（告诉驾驶员准备就绪）
+        telemetry.addData("状态", "初始化完成，等待启动");
+        telemetry.update();
+        waitForStart(); // 等待手机按下“PLAY”按钮（FTC 自主模式必需）
+
+        // 7. 自主运动序列（调用前进方法）
+        if (opModeIsActive()) { // 确保模式仍在运行
+            forward(2000, 0.5); // 前进 2000 毫秒（2 秒），功率 50%
+            stopRobot(); // 停止所有电机
+        }
+    }
+
+    // 8. 前进方法：实现“指定时间+指定功率”的前进（基础版，无里程计）
+    // distance：这里用“毫秒”表示运动时间（简单易实现，适合新手）
+    // power：电机功率（0~1，比如 0.5=50%）
+    void forward(long timeMs, double power) {
+        // 给所有电机设置前进功率（方向已在前面配置好）
+        motorTestFL.setPower(power);
+        motorTestFR.setPower(power);
+        motorTestBL.setPower(power);
+        motorTestBR.setPower(power);
+
+        // 保持前进状态指定时间（毫秒）
+        ElapsedTime timer = new ElapsedTime();
+        while (opModeIsActive() && timer.milliseconds() < timeMs) {
+            telemetry.addData("前进中", "时间：%.0f ms | 功率：%.2f", timer.milliseconds(), power);
+            telemetry.update();
+        }
+    }
+
+    // 辅助方法：停止所有电机
+    void stopRobot() {
+        motorTestFL.setPower(0);
+        motorTestFR.setPower(0);
+        motorTestBL.setPower(0);
+        motorTestBR.setPower(0);
+        telemetry.addData("状态", "已停止");
+        telemetry.update();
+    }
+}
