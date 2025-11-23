@@ -58,8 +58,8 @@ public class HelloWorld extends LinearOpMode {
 //        imu = hardwareMap.get(Gyroscope.class, "imu");
         motorTestFR = hardwareMap.get(DcMotor.class, "rightFront");
         motorTestFL = hardwareMap.get(DcMotor.class, "leftFront");
-        motorTestBL = hardwareMap.get(DcMotor.class, "rightRear");
-        motorTestBR = hardwareMap.get(DcMotor.class, "leftRear");
+        motorTestBR = hardwareMap.get(DcMotor.class, "rightRear");
+        motorTestBL = hardwareMap.get(DcMotor.class, "leftRear");
 //        digitalTouch = hardwareMap.get(DigitalChannel.class, "digitalTouch");
 //        sensorColorRange = hardwareMap.get(DistanceSensor.class, "sensorColorRange");
         //servoTest = hardwareMap.get(Servo.class, "Servo_0");
@@ -99,4 +99,5 @@ public class HelloWorld extends LinearOpMode {
 
         }
     }
+
 }
